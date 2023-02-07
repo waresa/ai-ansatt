@@ -2,18 +2,29 @@
 import './App.css';
 import './normal.css';
 import { useState }  from 'react';
+import Hamburger from 'hamburger-react';
+
 
 function App() {
 
   const [input, setInput] = useState('');
-  const [chatLog, setChatLog] = useState([
-
-]);
+  const [chatLog, setChatLog] = useState([]);
+  const [ansatt, setAnsatt] = useState("");
+  const [generator, setGenerator] = useState("");
 
 function clearChat() {
   setChatLog([]);
 }
 
+// function showNavbar that turns the display of the sidemenu on and off
+function showNavbar() {
+  const sidemenu = document.querySelector('.sidemenu');
+  if (sidemenu.style.display === 'none') {
+    sidemenu.style.display = 'block';
+  } else {
+    sidemenu.style.display = 'none';
+  }
+}
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -28,7 +39,7 @@ function clearChat() {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ message: messages })
+      body: JSON.stringify({ message: messages, ansatt: `${ansatt}`, generator: `${generator}`})
     });
 
     const data = await response.json();
@@ -36,12 +47,38 @@ function clearChat() {
   }
 
   return (
+    
     <div className="App">
+      {window.innerWidth < 768 && (<div className='nav'><Hamburger onToggle={showNavbar} color='#fff' size={20} /></div> )}
       <aside className='sidemenu'>
         <div className='sidemenu-btn' onClick={clearChat}>
           <span>+</span>
           Ny Samtale
         </div>
+        <select className='sidemenu-select' onChange={(e) => {setAnsatt(e.target.value); setGenerator('');}}>
+          <option value=''>Velg ansatt</option>
+          <option value='markedssjef'>Markedssjef</option>
+          <option value='seo-spesialist'>SEO Spesialist</option>
+          <option value='regnskapsfører'>Regnskapsfører</option>
+          <option value='produktansvarlig'>Produktansvarlig</option>
+          <option value='social media expert'>Social Media Expert</option>
+          <option value='juridisk rådgiver'>Juridisk Rådgiver</option>
+        </select>
+
+        <select className='sidemenu-select' onChange={(e) => {setGenerator(e.target.value); setAnsatt('')}}>
+          <option value=''>Velg generator</option>
+          <option value='kode gernerator'>Kode Generering</option>
+          <option value='content generator'>Content Generering</option>
+          <option value='email generator'>Email Generering</option>
+          <option value='tekst omskriver'>Omskriv Tekst</option>
+          <option value='tekstkompressor'>Tekstkompressor</option>
+          <option value='tesktoptimaliserer'>Optimiser Tekst</option>
+          <option value='tekst forenkler for 5. klassinger'>Forenkle Tekst</option>
+          <option value='søknad generator'>Søknad Generator</option>
+          <option value='produkt beskrivelse generator'>Produkt Beskrivelse</option>
+          <option value='produkt ide generator'>Produkt Ide</option>
+          <option value='forretningsplan generator'>Forretningsplan Generator</option>
+        </select>
       </aside>
       <section className='chatbox'>
         <div className='chat-log'>
@@ -55,6 +92,11 @@ function clearChat() {
           <div className='chat-input-holder'>
             <form onSubmit={handleSubmit}>
               <input className='chat-input-textarea' value={input} onChange={e => setInput(e.target.value)} />
+              <div className='chat-input-icon'>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                <path d="M498.1 5.6c10.1 7 15.4 19.1 13.5 31.2l-64 416c-1.5 9.7-7.4 18.2-16 23s-18.9 5.4-28 1.6L284 427.7l-68.5 74.1c-8.9 9.7-22.9 12.9-35.2 8.1S160 493.2 160 480v-83.6c0-4 1.5-7.8 4.2-10.7l167.6-182.9c5.8-6.3 5.6-16-.4-22s-15.7-6.4-22-.7L106 360.8l-88.3-44.2C7.1 311.3.3 300.7 0 288.9s5.9-22.8 16.1-28.7l448-256c10.7-6.1 23.9-5.5 34 1.4z" />
+              </svg>
+              </div>
             </form>
 
           </div>
@@ -63,22 +105,15 @@ function clearChat() {
   );
 }
 
-//Q: Why does this not work? <div className={'chat-message ${message.user == "gpt" && "chatgpt"}'}>
-//A: Because it is not a template string, it is a string literal. You need to use backticks ` instead of single quotes '. Also, you need to use curly braces {} to interpolate the variable.
-//Q: give me the code
-//A: const ChatMessage = ({ message }) => { 
-//   return (
-//    
-
 const ChatMessage = ({ message }) => {
   return (
-    <div className={`chat-message ${message.user == "gpt" && "chatgpt"}`}>
+    <div className={`chat-message ${message.user === "gpt" && "chatgpt"}`}>
 
     <div className='chat-message-center'>
       
       
-      <div className={`avatar ${message.user == "gpt" && "chatgpt"}`}>
-        {message.user == "gpt" &&       <svg
+      <div className={`avatar ${message.user === "gpt" && "chatgpt"}`}>
+        {message.user === "gpt" &&       <svg
                       width={41}
                       height={41}
                       fill="none"
@@ -91,7 +126,7 @@ const ChatMessage = ({ message }) => {
                         fill="currentColor"
                       />
                     </svg>}
-        {message.user == "me" &&     <svg
+        {message.user === "me" &&     <svg
     viewBox="-2.4 -2.4 28.8 28.8"
     xmlns="http://www.w3.org/2000/svg"
     fill="none"

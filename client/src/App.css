@@ -10,11 +10,39 @@
     left: 0;
 }
 
+/* do this on phone */
+@media (max-width: 768px) {
+    .App {
+        flex-direction: column;
+    }
+    .sidemenu {
+        width: 100% !important;
+    }
+
+    .chat-input-textarea {
+        min-width: 100%;
+    }
+
+    .chat-input-icon {
+        margin-right: 35px !important;
+    }
+
+    .chat-input-holder {
+        background-image: linear-gradient(to bottom, rgba(255,0,0,0), rgb(32 33 35)) !important;
+    }
+}
+
+.nav {
+    background-color: #202123;
+}
+
+
 .sidemenu {
     width: 240px;
     background-color: #202123;
     padding: 10px;
 }
+
 
 .sidemenu-btn {
     padding: 12px;
@@ -27,6 +55,22 @@
     cursor: pointer;
 }
 
+.sidemenu-select {
+    margin-top: 10px;
+    background-color: #202123;
+    padding: 12px;
+    border: 1px solid rgb(77, 77, 77);
+    border-radius: 5px;
+    color: white;
+    text-align: left;
+    transition: 0.2s ease all;
+    font-size: 0.8rem;
+    cursor: pointer;
+    width: 100%;
+    outline: none;
+}
+
+.sidemenu-select:hover,
 .sidemenu-btn:hover {
     background-color: rgb(255, 255, 255, 0.1);
 }
@@ -50,6 +94,26 @@
     right: 0;
     margin: auto;
     color: white;
+    background-image: linear-gradient(to bottom, rgba(255,0,0,0), rgba(52, 53, 65, 1));
+
+}
+
+.chat-input-icon {
+    height: 1.5rem;
+    width: 1.5rem;
+    padding: 4px;
+    position: absolute;
+    box-sizing:border-box;
+    top:50%;
+    right:2px;
+    transform: translateY(-50%);
+    margin-right: 100px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.chat-input-icon:hover {
+    background-color: rgba(35, 35, 35, 0.5);
 }
 
 .chat-input-textarea {
@@ -69,6 +133,9 @@
     padding: 24px 0 24px 0;
     text-align: left;
     color: white;
+    overflow-y: scroll;
+    height: 100%;
+    padding-bottom: 100px;
 }
 
 .chat-message.chatgpt {
