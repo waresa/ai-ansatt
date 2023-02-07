@@ -102,10 +102,13 @@
         transform: translateY(-3px);
     }
     
-    .sidemenu-select:hover,
     .sidemenu-btn:hover {
         background-color: rgb(255, 255, 255, 0.2);
-        color: #202123;
+        transform: scale(1.02);
+    }
+    
+    .sidemenu-select:hover {
+        transform: scale(1.02);
     }
     
     .submit-btn:hover {
