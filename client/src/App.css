@@ -17,6 +17,8 @@
         }
         .sidemenu {
             width: 100% !important;
+            transition: 0.5s ease all;
+            display: none;
         }
         .chat-input-textarea {
             max-width: 70% !important;
@@ -26,6 +28,9 @@
         }
         .chat-input-holder {
             background-image: linear-gradient(to bottom, rgba(255, 0, 0, 0), rgb(32 33 35)) !important;
+        }
+        h1 {
+            font-size: 1.5rem !important;
         }
     }
     

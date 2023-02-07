@@ -29,10 +29,10 @@ function toggleInfo() {
 // function showNavbar that turns the display of the sidemenu on and off
 function showNavbar() {
   const sidemenu = document.querySelector('.sidemenu');
-  if (sidemenu.style.display === 'none') {
-    sidemenu.style.display = 'block';
-  } else {
+  if (sidemenu.style.display === 'block') {
     sidemenu.style.display = 'none';
+  } else {
+    sidemenu.style.display = 'block';
   }
 }
 
