@@ -11,9 +11,19 @@ function App() {
   const [chatLog, setChatLog] = useState([]);
   const [ansatt, setAnsatt] = useState("");
   const [generator, setGenerator] = useState("");
+  const [toLanguage, setToLanguage] = useState("");
 
 function clearChat() {
   setChatLog([]);
+}
+
+function toggleInfo() {
+  const info = document.querySelector('.info');
+  if (info.style.display === 'none') {
+    info.style.display = 'block';
+  } else {
+    info.style.display = 'none';
+  }
 }
 
 // function showNavbar that turns the display of the sidemenu on and off
@@ -55,48 +65,81 @@ function showNavbar() {
           <span>+</span>
           Ny Samtale
         </div>
-        <select className='sidemenu-select' onChange={(e) => {setAnsatt(e.target.value); setGenerator('');}}>
+        <select className='sidemenu-select' value={ansatt} onChange={(e) => {setAnsatt(e.target.value); setGenerator(''); clearChat();}}>
           <option value=''>Velg ansatt</option>
           <option value='markedssjef'>Markedssjef</option>
+          <option value='kundeservice'>Kundeservice</option>
           <option value='seo-spesialist'>SEO Spesialist</option>
           <option value='regnskapsfører'>Regnskapsfører</option>
           <option value='produktansvarlig'>Produktansvarlig</option>
+          <option value='salgsansvarlig'>Salgsansvarlig</option>
           <option value='social media expert'>Social Media Expert</option>
           <option value='juridisk rådgiver'>Juridisk Rådgiver</option>
         </select>
 
-        <select className='sidemenu-select' onChange={(e) => {setGenerator(e.target.value); setAnsatt('')}}>
+        <select className='sidemenu-select' value={generator} onChange={(e) => {setGenerator(e.target.value); setAnsatt(''); clearChat();}}>
           <option value=''>Velg generator</option>
-          <option value='kode gernerator'>Kode Generering</option>
+          <option value='code generator'>Kode Generering</option>
           <option value='content generator'>Content Generering</option>
           <option value='email generator'>Email Generering</option>
-          <option value='tekst omskriver'>Omskriv Tekst</option>
-          <option value='tekstkompressor'>Tekstkompressor</option>
-          <option value='tesktoptimaliserer'>Optimiser Tekst</option>
-          <option value='tekst forenkler for 5. klassinger'>Forenkle Tekst</option>
-          <option value='søknad generator'>Søknad Generator</option>
-          <option value='produkt beskrivelse generator'>Produkt Beskrivelse</option>
-          <option value='produkt ide generator'>Produkt Ide</option>
-          <option value='forretningsplan generator'>Forretningsplan Generator</option>
+          <option value='content spinner'>Innholdsspinning</option>
+          <option value='text summarizer'>Tekstsummering</option>
+          <option value='text optimizer'>Tekstoptimalisering</option>
+          <option value='text simplifier, simplify to a 5th grader level.'>Tekstforenkling</option>
+          <option value='resume generator'>CV-generator</option>
+          <option value='buisness plan generator'>Forretningsplan Generator</option>
         </select>
+{/* 
+        <select className='sidemenu-select' onChange={(e) => {setToLanguage(e.target.value); setGenerator(""); setAnsatt("")}}>
+          <option value=''>Oversett Tekst til:</option>
+          <option value='norsk'>Norsk</option>
+          <option value='engelsk'>Engelsk</option>
+          <option value='spansk'>Spansk</option>
+          <option value='fransk'>Fransk</option>
+          <option value='tysk'>Tysk</option>
+          <option value='italiensk'>Italiensk</option>
+          <option value='portugesisk'>Portugisisk</option>
+          <option value='russisk'>Russisk</option>
+          <option value='japansk'>Japansk</option>
+          <option value='kinesisk'>Kinesisk</option>
+          <option value="persisk">Persisk</option>
+        </select> */}
       </aside>
       <section className='chatbox'>
         <div className='chat-log'>
           {chatLog.map((message, index) => (
             <ChatMessage key = {index} message={message} />
           ))}
+          {ansatt === "" && generator === "" && <div className='info'> <h1>Velkommen til AI-Assistenten</h1><p>Her kan du chatte med en AI assistanten. Du kan velge en ansatt eller en generator for å få hjelp med ulike oppgaver.</p></div>}
+          {ansatt === "markedssjef" && <div className='info'> <h1>Markedssjef</h1>
+          <p>Som Markedssjef kan jeg hjelpe deg å utvikle og implementere markedsstrategier for å fremme et produkt, en tjeneste eller et merke.</p>
+          <p><span className='ex'>Eksempel spørsmål:</span> Gi meg en strategi for å øke merkevarebevisstheten i det nye markedsområdet.</p></div>}
+          {ansatt === "seo-spesialist" && <div className='info'> <h1>SEO Spesialist</h1><p>En SEO-spesialist kan jeg hjelpe deg å forbedre synligheten til din nettside i søkemotorer som Google. Jeg kan lære deg teknikker for SEO som kan hjelpe deg å rangere høyere i søkeresultatene og få mer relevant trafikk.</p>
+          <p><span className='ex'>Eksempel spørsmål: </span>Hva er de viktigste faktorene for å rangere høyt på Google?</p></div>}
+          {ansatt === "regnskapsfører" && <div className='info'> <h1>Regnskapsfører</h1><p>Som regnskapsfører kan jeg hjelpe deg med å holde orden på bedriftens økonomi. Jeg kan hjelpe deg med å lage budsjett, regnskap og rapporter.</p><p><span className='ex'>Eksempel spørsmål: </span>Hvordan kan jeg optimalisere min bedrifts økonomiske rapportering for å forbedre vår økonomiske stilling?</p></div>}
+          {ansatt === "produktansvarlig" && <div className='info'> <h1>Produktansvarlig</h1><p>Som produktansvarlig kan jeg hjelpe deg med å utvikle og lansere nye produkter. Jeg kan hjelpe deg med å identifisere markedsmuligheter, utvikle produkter og lansere dem.</p><p><span className='ex'>Eksempel spørsmål: </span>Hvordan kan jeg lage en produktstrategi for å øke salget?</p></div>}
+          {ansatt === "kundeservice" && <div className='info'> <h1>Kundeservice</h1><p>Som kundeservice kan jeg hjelpe deg med å svare på spørsmål fra kunder. Jeg kan hjelpe deg med å svare på spørsmål om produkter, tjenester, priser og levering.</p><p><span className='ex'>Eksempel spørsmål: </span>Hva skal jeg si til en kunde som er ikke fornøyd med varen sin?</p></div>}
+          {ansatt === "salgsansvarlig" && <div className='info'> <h1>Salgsansvarlig</h1><p>Som salgsansvarlig kan jeg hjelpe deg med å utvikle og implementere salgsstrategier for å øke salget. Jeg kan hjelpe deg med å identifisere markedsmuligheter, utvikle salgsstrategier og implementere dem.</p><p><span className='ex'>Eksempel spørsmål: </span>Hvordan kan jeg øke salget i det nye sko markedet?</p></div>}
+          {ansatt === "social media expert" && <div className='info'> <h1>Social Media Expert</h1><p>Som Social Media Expert kan jeg hjelpe deg med å utvikle og implementere sosiale mediestrategier for å øke salget. Jeg kan hjelpe deg med å identifisere markedsmuligheter, utvikle sosiale mediestrategier og implementere dem.</p><p><span className='ex'>Eksempel spørsmål: </span>Hvilken type innlegg er best innen fitness markedet?</p></div>}
+          {ansatt === "juridisk rådgiver" && <div className='info'> <h1>Juridisk Rådgiver</h1><p>Som juridisk rådgiver kan jeg hjelpe deg med å utvikle og implementere juridiske strategier for å beskytte bedriften din. Jeg kan hjelpe deg med å identifisere juridiske risikoer, utvikle juridiske strategier og implementere dem.</p><p><span className='ex'>Eksempel spørsmål: </span>Hvordan kan jeg beskytte bedriften min mot juridiske risikoer?</p></div>}
+
+          {generator === "code generator" && <div className='info'> <h1>Kodegenerering</h1><p>Code Generator kan hjelpe deg med å generere ny kode og hjelpe deg å debugge din kode.</p><p><span className='ex'>Eksempel spørsmål: </span>Lag et JS script som printer ut 1 til 10.</p></div>}
+          {generator === "content generator" && <div className='info'> <h1>Innholdsgenerering</h1><p>Innholdsgenerering kan hjelpe deg med å generere nye innholdsideer og styrke ditt digitale innhold.</p><p><span className='ex'>Eksempel spørsmål: </span>En 200 ord om reisebransjen.</p><p><span className='ex'>Eksempel spørsmål 2: </span>Produktbeskrivelse, tastatur.</p></div>}
+          {generator === "email generator" && <div className='info'> <h1>E-postgenerering</h1><p>E-postgenerering kan hjelpe deg med å generere nye e-postideer og templates.</p><p><span className='ex'>Eksempel spørsmål: </span>Takk kunde for å ha bestilt av oss.</p></div>}
+          {generator === "content spinner" && <div className='info'> <h1>Innholdsspinning</h1><p>Innholdsspinning kan hjelpe deg med å spinne ditt eksisterende innhold og lage nye versjoner av det.</p><p><span className='ex'>Eksempel spørsmål: </span>"Jeg liker å spise pizza"</p></div>}
+          {generator === "text simplifier, simplify to a 5th grader level." && <div className='info'> <h1>Tekstforenkling</h1><p>Tekstforbedring kan hjelpe deg med å forbedre teksten din og gjøre den enklere. Så enkelt at en barn kan skjønne den.</p><p><span className='ex'>Eksempel spørsmål: </span>"Denne løsningen benytter en multithreaded algoritme for å effektivisere databehandlingen og øke ytelsen på systemet"</p></div>}
+          {generator === "text optimizer" && <div className='info'> <h1>Tekstoptimalisering</h1><p>Tekstoptimalisering kan hjelpe deg med å optimalisere teksten din og gjøre den mer effektiv.</p><p><span className='ex'>Eksempel spørsmål: </span>"morgenen jeg gå ut å kjøpe boller til frokost fordi jeg sulten"</p></div>}
+          {generator === "text summarizer" && <div className='info'> <h1>Tekstsummering</h1><p>Tekstsummering kan hjelpe deg med å summere teksten din.</p><p><span className='ex'>Eksempel spørsmål: </span>"Neste år vil det være 100 år siden man første gang kunne se et fly i luften. Flyreiser har blitt en viktig del av livet vårt, og gir oss muligheten til å besøke andre land og kulturer. Men selv om vi har kommet langt siden de første flyreisene, er det fortsatt mye arbeid som må gjøres for å gjøre luftfart mer bærekraftig. Flyreiser har en stor påvirkning på miljøet, og det er viktig at vi jobber for å redusere denne påvirkningen"</p></div>}
+          {generator === "resume generator" && <div className='info'> <h1>CV-generator</h1><p>CV-generator kan hjelpe deg med å generere et nytt CV.</p><p><span className='ex'>Eksempel spørsmål: </span>CV for en 20 år gammel kvinne som søker jobb som designer med X erfaring hos Y.</p></div>}
+          {generator === "buisness plan generator" && <div className='info'> <h1>Forretningsplan Generator</h1><p>Forretningsplan generator kan hjelpe deg med å generere en forretningsplan.</p><p><span className='ex'>Eksempel spørsmål: </span>Startup som skal lage en app for å hjelpe folk med å finne en partner.</p></div>}
 
           
         
         </div>
           <div className='chat-input-holder'>
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={(e) => {handleSubmit(e); toggleInfo();}}>
               <input className='chat-input-textarea' value={input} onChange={e => setInput(e.target.value)} />
-              <div className='chat-input-icon'>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                <path d="M498.1 5.6c10.1 7 15.4 19.1 13.5 31.2l-64 416c-1.5 9.7-7.4 18.2-16 23s-18.9 5.4-28 1.6L284 427.7l-68.5 74.1c-8.9 9.7-22.9 12.9-35.2 8.1S160 493.2 160 480v-83.6c0-4 1.5-7.8 4.2-10.7l167.6-182.9c5.8-6.3 5.6-16-.4-22s-15.7-6.4-22-.7L106 360.8l-88.3-44.2C7.1 311.3.3 300.7 0 288.9s5.9-22.8 16.1-28.7l448-256c10.7-6.1 23.9-5.5 34 1.4z" />
-              </svg>
-              </div>
+              <input type="submit" className='submit-btn'/>
             </form>
 
           </div>

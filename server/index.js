@@ -17,39 +17,38 @@ const openai = new OpenAIApi(configuration);
 
 async function callApi() {
 
-        const app = express();
-        app.use(bodyParser.json());
-        app.use(cors());
-        const port = 3080;
+    const app = express();
+    app.use(bodyParser.json());
+    app.use(cors());
+    const port = 3080;
 
-        app.post("/", async(req, res) => {
+    app.post("/", async(req, res) => {
 
-            const { message } = req.body;
-            const { ansatt } = req.body;
-            const { generator } = req.body;
-            // variable tool that is ansatt if ansatt is not empty string, and generator if generator is not empty string
-            const tool = ansatt || generator;
+        const { message } = req.body;
+        const { ansatt } = req.body;
+        const { generator } = req.body;
 
-            const response = await openai.createCompletion({
-                model: "text-davinci-003",
-                prompt: `Act as a ${tool}. Ansewr in language asked. Q: ${message}?`,
-                max_tokens: 100,
-                temperature: 0.5,
-            });
-            res.json({
-                message: response.data.choices[0].text
-            })
-            console.log(tool);
+        // variable tool that is ansatt if ansatt is not empty string, and generator if generator is not empty string
+        const tool = ansatt || generator;
+
+        const response = await openai.createCompletion({
+            model: "text-davinci-003",
+            prompt: `Act as a ${tool}. Ansewr in language asked, default to norwegian. Q: ${message}?`,
+            max_tokens: 100,
+            temperature: 0.5,
         });
+        res.json({
+            message: response.data.choices[0].text
+        })
+        console.log(tool);
+    });
 
-        app.listen(port, () => {
-            console.log(`Example app listening at http://localhost:${port}`);
-        });
+    app.listen(port, () => {
+        console.log(`Example app listening at http://localhost:${port}`);
+    });
 
 }
 
 callApi();
 
 //Create a simple express api that calls the function above and returns the response
-
-
