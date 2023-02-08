@@ -1,6 +1,6 @@
 
-import './App.css';
-import './normal.css';
+import '../App.css';
+import '../normal.css';
 import { useState }  from 'react';
 import Hamburger from 'hamburger-react';
 import ChatMessage from '../components/ChatMessage';

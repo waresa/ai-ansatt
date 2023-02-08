@@ -1,0 +1,6 @@
+//disable formatting on save for index.js
+{
+    "files.exclude": {
+        "**/index.js": true
+    }
+}
