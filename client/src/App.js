@@ -3,6 +3,10 @@ import './App.css';
 import './normal.css';
 import { useState }  from 'react';
 import Hamburger from 'hamburger-react';
+import ChatMessage from './components/ChatMessage';
+import isLoading from './components/isLoading';
+
+
 
 
 function App() {
@@ -11,19 +15,20 @@ function App() {
   const [chatLog, setChatLog] = useState([]);
   const [ansatt, setAnsatt] = useState("");
   const [generator, setGenerator] = useState("");
-  const [toLanguage, setToLanguage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
 function clearChat() {
   setChatLog([]);
 }
 
-function toggleInfo() {
+function toggleInfoOff() {
   const info = document.querySelector('.info');
-  if (info.style.display === 'none') {
-    info.style.display = 'block';
-  } else {
-    info.style.display = 'none';
-  }
+  info.style.display = 'none';
+}
+
+function toggleInfoOn() {
+  const info = document.querySelector('.info');
+  info.style.display = 'flex';
 }
 
 // function showNavbar that turns the display of the sidemenu on and off
@@ -41,6 +46,7 @@ function showNavbar() {
     let chatLogNew = [...chatLog, { user: "me", message: `${input}`}]
     setInput('');
     setChatLog(chatLogNew);
+    setIsLoading(true);
 
     const messages = chatLogNew.map((message) => message.message);
 
@@ -51,9 +57,11 @@ function showNavbar() {
       },
       body: JSON.stringify({ message: messages, ansatt: `${ansatt}`, generator: `${generator}`})
     });
+    
 
     const data = await response.json();
     await setChatLog([...chatLogNew, { user: 'gpt', message: data.message }]);
+    setIsLoading(false);
   }
 
   return (
@@ -61,7 +69,7 @@ function showNavbar() {
     <div className="App">
       {window.innerWidth < 768 && (<div className='nav'><Hamburger onToggle={showNavbar} color='#fff' size={20} /></div> )}
       <aside className='sidemenu'>
-        <div className='sidemenu-btn' onClick={clearChat}>
+        <div className='sidemenu-btn' onClick={() => {clearChat(); toggleInfoOn();}}>
           <span>+</span>
           Ny Samtale
         </div>
@@ -89,27 +97,39 @@ function showNavbar() {
           <option value='resume generator'>CV-generator</option>
           <option value='buisness plan generator'>Forretningsplan Generator</option>
         </select>
-{/* 
-        <select className='sidemenu-select' onChange={(e) => {setToLanguage(e.target.value); setGenerator(""); setAnsatt("")}}>
-          <option value=''>Oversett Tekst til:</option>
-          <option value='norsk'>Norsk</option>
-          <option value='engelsk'>Engelsk</option>
-          <option value='spansk'>Spansk</option>
-          <option value='fransk'>Fransk</option>
-          <option value='tysk'>Tysk</option>
-          <option value='italiensk'>Italiensk</option>
-          <option value='portugesisk'>Portugisisk</option>
-          <option value='russisk'>Russisk</option>
-          <option value='japansk'>Japansk</option>
-          <option value='kinesisk'>Kinesisk</option>
-          <option value="persisk">Persisk</option>
-        </select> */}
+
       </aside>
       <section className='chatbox'>
         <div className='chat-log'>
           {chatLog.map((message, index) => (
             <ChatMessage key = {index} message={message} />
           ))}
+
+          {isLoading &&     <div className= "chat-message chatgpt">
+    
+    <div className='chat-message-center'>
+        
+        
+        <div className="avatar chatgpt">
+       <svg
+                        width={41}
+                        height={41}
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        strokeWidth={1.5}
+                        className="h-6 w-6"
+                    >
+                        <path
+                        d="M37.532 16.87a9.963 9.963 0 0 0-.856-8.184 10.078 10.078 0 0 0-10.855-4.835A9.964 9.964 0 0 0 18.306.5a10.079 10.079 0 0 0-9.614 6.977 9.967 9.967 0 0 0-6.664 4.834 10.08 10.08 0 0 0 1.24 11.817 9.965 9.965 0 0 0 .856 8.185 10.079 10.079 0 0 0 10.855 4.835 9.965 9.965 0 0 0 7.516 3.35 10.078 10.078 0 0 0 9.617-6.981 9.967 9.967 0 0 0 6.663-4.834 10.079 10.079 0 0 0-1.243-11.813ZM22.498 37.886a7.474 7.474 0 0 1-4.799-1.735c.061-.033.168-.091.237-.134l7.964-4.6a1.294 1.294 0 0 0 .655-1.134V19.054l3.366 1.944a.12.12 0 0 1 .066.092v9.299a7.505 7.505 0 0 1-7.49 7.496ZM6.392 31.006a7.471 7.471 0 0 1-.894-5.023c.06.036.162.099.237.141l7.964 4.6a1.297 1.297 0 0 0 1.308 0l9.724-5.614v3.888a.12.12 0 0 1-.048.103l-8.051 4.649a7.504 7.504 0 0 1-10.24-2.744ZM4.297 13.62A7.469 7.469 0 0 1 8.2 10.333c0 .068-.004.19-.004.274v9.201a1.294 1.294 0 0 0 .654 1.132l9.723 5.614-3.366 1.944a.12.12 0 0 1-.114.01L7.04 23.856a7.504 7.504 0 0 1-2.743-10.237Zm27.658 6.437-9.724-5.615 3.367-1.943a.121.121 0 0 1 .113-.01l8.052 4.648a7.498 7.498 0 0 1-1.158 13.528v-9.476a1.293 1.293 0 0 0-.65-1.132Zm3.35-5.043c-.059-.037-.162-.099-.236-.141l-7.965-4.6a1.298 1.298 0 0 0-1.308 0l-9.723 5.614v-3.888a.12.12 0 0 1 .048-.103l8.05-4.645a7.497 7.497 0 0 1 11.135 7.763Zm-21.063 6.929-3.367-1.944a.12.12 0 0 1-.065-.092v-9.299a7.497 7.497 0 0 1 12.293-5.756 6.94 6.94 0 0 0-.236.134l-7.965 4.6a1.294 1.294 0 0 0-.654 1.132l-.006 11.225Zm1.829-3.943 4.33-2.501 4.332 2.5v5l-4.331 2.5-4.331-2.5V18Z"
+                        fill="currentColor"
+                        />
+                    </svg>
+        </div>
+        <div className='message'>
+          <div id="cursor"></div>
+        </div>
+    </div>
+    </div>}
 
           {ansatt === "" && generator === "" && 
             <div className='info'>
@@ -235,12 +255,9 @@ function showNavbar() {
               <p>Forretningsplan generator kan hjelpe deg med å generere en forretningsplan.</p>
               <p><span className='ex'>Eksempel spørsmål: </span>Startup som skal lage en app for å hjelpe folk med å finne en partner.</p>
             </div>}
-
-          
-        
         </div>
           <div className='chat-input-holder'>
-            <form onSubmit={(e) => {handleSubmit(e); toggleInfo();}}>
+            <form onSubmit={(e) => {handleSubmit(e); toggleInfoOff();}}>
               <input className='chat-input-textarea' value={input} onChange={e => setInput(e.target.value)} />
               <input type="submit" className='submit-btn' value="Send"/>
             </form>
@@ -248,61 +265,6 @@ function showNavbar() {
           </div>
       </section>
       </div>
-  );
-}
-
-const ChatMessage = ({ message }) => {
-  return (
-    <div className={`chat-message ${message.user === "gpt" && "chatgpt"}`}>
-
-    <div className='chat-message-center'>
-      
-      
-      <div className={`avatar ${message.user === "gpt" && "chatgpt"}`}>
-        {message.user === "gpt" &&       <svg
-                      width={41}
-                      height={41}
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      strokeWidth={1.5}
-                      className="h-6 w-6"
-                    >
-                      <path
-                        d="M37.532 16.87a9.963 9.963 0 0 0-.856-8.184 10.078 10.078 0 0 0-10.855-4.835A9.964 9.964 0 0 0 18.306.5a10.079 10.079 0 0 0-9.614 6.977 9.967 9.967 0 0 0-6.664 4.834 10.08 10.08 0 0 0 1.24 11.817 9.965 9.965 0 0 0 .856 8.185 10.079 10.079 0 0 0 10.855 4.835 9.965 9.965 0 0 0 7.516 3.35 10.078 10.078 0 0 0 9.617-6.981 9.967 9.967 0 0 0 6.663-4.834 10.079 10.079 0 0 0-1.243-11.813ZM22.498 37.886a7.474 7.474 0 0 1-4.799-1.735c.061-.033.168-.091.237-.134l7.964-4.6a1.294 1.294 0 0 0 .655-1.134V19.054l3.366 1.944a.12.12 0 0 1 .066.092v9.299a7.505 7.505 0 0 1-7.49 7.496ZM6.392 31.006a7.471 7.471 0 0 1-.894-5.023c.06.036.162.099.237.141l7.964 4.6a1.297 1.297 0 0 0 1.308 0l9.724-5.614v3.888a.12.12 0 0 1-.048.103l-8.051 4.649a7.504 7.504 0 0 1-10.24-2.744ZM4.297 13.62A7.469 7.469 0 0 1 8.2 10.333c0 .068-.004.19-.004.274v9.201a1.294 1.294 0 0 0 .654 1.132l9.723 5.614-3.366 1.944a.12.12 0 0 1-.114.01L7.04 23.856a7.504 7.504 0 0 1-2.743-10.237Zm27.658 6.437-9.724-5.615 3.367-1.943a.121.121 0 0 1 .113-.01l8.052 4.648a7.498 7.498 0 0 1-1.158 13.528v-9.476a1.293 1.293 0 0 0-.65-1.132Zm3.35-5.043c-.059-.037-.162-.099-.236-.141l-7.965-4.6a1.298 1.298 0 0 0-1.308 0l-9.723 5.614v-3.888a.12.12 0 0 1 .048-.103l8.05-4.645a7.497 7.497 0 0 1 11.135 7.763Zm-21.063 6.929-3.367-1.944a.12.12 0 0 1-.065-.092v-9.299a7.497 7.497 0 0 1 12.293-5.756 6.94 6.94 0 0 0-.236.134l-7.965 4.6a1.294 1.294 0 0 0-.654 1.132l-.006 11.225Zm1.829-3.943 4.33-2.501 4.332 2.5v5l-4.331 2.5-4.331-2.5V18Z"
-                        fill="currentColor"
-                      />
-                    </svg>}
-        {message.user === "me" &&     <svg
-    viewBox="-2.4 -2.4 28.8 28.8"
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    stroke="#fff"
-  >
-    <rect
-      x={-2.4}
-      y={-2.4}
-      width={28.8}
-      height={28.8}
-      rx={14.4}
-      fill="#fff"
-      stroke="none"
-      strokeWidth={0}
-    />
-    <g
-      stroke="#000"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2.4}
-    >
-      <circle cx={12} cy={8} r={5} />
-      <path d="M20 21a8 8 0 1 0-16 0m16 0a8 8 0 1 0-16 0" />
-    </g>
-  </svg> }
-      </div>
-      <div className='message'>{message.message}</div>
-  </div>
-</div>
-
   );
 }
 
