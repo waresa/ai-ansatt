@@ -40,7 +40,7 @@ async function callApi() {
         res.json({
             message: response.data.choices[0].text
         })
-        console.log(tool);
+        console.log();
         console.log(response.data.choices[0].text);
     });
 
