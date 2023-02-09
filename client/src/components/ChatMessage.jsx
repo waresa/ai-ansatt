@@ -1,5 +1,3 @@
-import React from "react";
-
 const ChatMessage = ({ message }) => {
     return (
       <div className={`chat-message ${message.user === "gpt" && "chatgpt"}`}>

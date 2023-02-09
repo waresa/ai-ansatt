@@ -1,4 +1,3 @@
-import React from 'react';
 
 const SideMenu = (props) => {
     const { ansatt, generator, clearChat, setAnsatt, setGenerator } = props;

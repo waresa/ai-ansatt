@@ -1,5 +1,3 @@
-import React from "react";
-
 const isLoading = () => {
   return (  
     <div className= "chat-message chatgpt">
