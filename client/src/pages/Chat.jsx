@@ -2,7 +2,6 @@
 import '../App.css';
 import '../normal.css';
 import { useState }  from 'react';
-import Hamburger from 'hamburger-react';
 import SideMenu from '../components/SideMenu';
 import ChatBox from '../components/ChatBox';
 
@@ -21,15 +20,6 @@ function clearChat() {
   setChatLog([]);
 }
 
-// function showNavbar that turns the display of the sidemenu on and off
-function showNavbar() {
-  const sidemenu = document.querySelector('.sidemenu');
-  if (sidemenu.style.display === 'block') {
-    sidemenu.style.display = 'none';
-  } else {
-    sidemenu.style.display = 'block';
-  }
-}
   async function handleSubmit(e) {
     e.preventDefault();
     let chatLogNew = [...chatLog, { user: "me", message: `${input}`}]
@@ -56,7 +46,6 @@ function showNavbar() {
   return (
     
     <div className="App">
-      {window.innerWidth < 768 && (<div className='nav'><Hamburger onToggle={showNavbar} color='#fff' size={20} /></div> )}
       <SideMenu ansatt={ansatt} setAnsatt={setAnsatt} generator={generator} setGenerator={setGenerator} clearChat={clearChat} />
       <ChatBox chatLog={chatLog} isLoading={isLoading} handleSubmit={handleSubmit} input={input} setInput={setInput} ansatt={ansatt} generator={generator}  />
       </div>

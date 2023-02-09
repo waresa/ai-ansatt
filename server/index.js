@@ -34,8 +34,8 @@ async function callApi() {
         const response = await openai.createCompletion({
             model: "text-davinci-003",
             prompt: `Act as a(n) ${tool}. Ansewr in language asked, default to norwegian. Q: ${message}?`,
-            max_tokens: 100,
-            temperature: 0.5,
+            max_tokens: 2000,
+            temperature: 0.9,
         });
         res.json({
             message: response.data.choices[0].text
