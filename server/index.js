@@ -86,7 +86,7 @@ async function test() {
     }
 
     // Define query to search for
-    const query = "Hvor mange bom skøyt Egil?";
+    const query = "Hva heter treneren til Tandrevold?";
 
     // Create embedding for query
     const queryRes = await openai.createEmbedding({

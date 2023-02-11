@@ -214,6 +214,43 @@
         height: 40px;
     }
     
+    .form-group {
+        background-color: #202123;
+        padding: 12px;
+        border: 1px solid rgb(77, 77, 77);
+        border-radius: 5px;
+        color: white;
+        text-align: center;
+        transition: 0.2s ease all;
+        font-size: 0.8rem;
+        cursor: pointer;
+        outline: none;
+        transform: translateY(-3px);
+        margin-top: 12px;
+    }
+    /* edit choose file button */
+    
+    .form-control {
+        background-color: #202123;
+        padding: 12px;
+        border: 1px solid rgb(77, 77, 77);
+        border-radius: 5px;
+        color: white;
+        text-align: center;
+        transition: 0.2s ease all;
+        font-size: 0.8rem;
+        cursor: pointer;
+        width: 100%;
+        outline: none;
+        margin-top: 20px;
+        height: 50px;
+        transform: translateY(-3px);
+    }
+    
+    .form-control:hover {
+        background-color: rgb(255, 255, 255, 0.1);
+    }
+    
     #cursor {
         width: 5px;
         height: 20px;

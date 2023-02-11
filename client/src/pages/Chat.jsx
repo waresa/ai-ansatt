@@ -29,7 +29,7 @@ function clearChat() {
 
     const messages = chatLogNew.map((message) => message.message);
 
-    const response = await fetch('http://localhost:3080', {
+    const response = await fetch('http://localhost:3080/chat', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
