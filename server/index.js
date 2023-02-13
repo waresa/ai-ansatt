@@ -5,15 +5,82 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const ndarray = require('ndarray');
-const ops = require('ndarray-ops');
 const cosineSimilarity = require('compute-cosine-similarity');
 const multer = require('multer');
-const fs = require('fs');
 const pdf = require('pdf-parse');
-const natural = require('natural');
-const tokenizer = new natural.SentenceTokenizer();
+const NodeCache = require('node-cache');
+const fs = require('fs');
+const path = require('path');
+const mammoth = require('mammoth');
 
+// Create a new NodeCache instance to use as the cache for the document list and embeddings
+const cache = new NodeCache({ stdTTL: 600, checkperiod: 120 });
+const embeddingsCache = new Map(); // Create a new Map to use as the cache
 
+//Function to cache the embeddings for the document to avoid having to calculate them every time
+async function getEmbedding(document) {
+
+    let embedding = []; // Create an empty array to store the embedding
+
+    // Check if embedding for the document is already in the cache
+    if (embeddingsCache.has(document)) {
+        embedding = embeddingsCache.get(document);
+    } else {
+        // If embedding is not in the cache, calculate it and add it to the cache
+        const embs = await openai.createEmbedding({
+            model: 'text-embedding-ada-002',
+            input: document
+        });
+
+        for (let i = 0; i < embs.data.data.length; i++) {
+            embedding.push(embs.data.data[i].embedding);
+        }
+        embeddingsCache.set(document, embedding); // Store the calculated embedding in the cache
+    }
+
+    return embedding;
+}
+
+// Function to split the text into batches and cache the batches to avoid having to split the text every time
+async function createDocumentList(text, maxChars = 500) {
+    const cacheKey = `documentList:${text}`;
+    let documents = cache.get(cacheKey);
+
+    if (!documents) {
+        const sentences = text.split(/(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s/);
+        documents = [];
+
+        for (const sentence of sentences) {
+            if (sentence.length <= maxChars) {
+                documents.push(sentence.trim());
+            }
+        }
+
+        cache.set(cacheKey, documents);
+    }
+
+    return documents;
+}
+
+// Function to extract text from a file
+async function extractTextFromFile(filePath) {
+    const fileExt = path.extname(filePath);
+
+    if (fileExt === '.pdf') {
+        const data = await pdf(fs.readFileSync(filePath));
+        return data.text.toString();
+    } else if (fileExt === '.docx') {
+        const data = await mammoth.extractRawText({ path: filePath });
+        return data.value.toString();
+    } else if (fileExt === '.txt') {
+        const data = fs.readFileSync(filePath, 'utf-8');
+        return data;
+    } else {
+        throw new Error(`Unsupported file type: ${fileExt}`);
+    }
+}
+
+// Set up multer to handle file uploads
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {
         cb(null, 'uploads/') // change 'uploads/' to your desired upload directory
@@ -22,6 +89,7 @@ const storage = multer.diskStorage({
         cb(null, file.originalname)
     }
 })
+
 
 const app = express();
 const upload = multer({ storage: storage });
@@ -36,11 +104,6 @@ const openai = new OpenAIApi(configuration);
 
 app.use(bodyParser.json());
 app.use(cors());
-
-async function extractTextFromPDF(pdfFile) {
-    const data = await pdf(pdfFile);
-    return data.text.toString(); // Return the text as a string
-}
 
 
 async function callApi() {
@@ -65,53 +128,31 @@ async function callApi() {
     });
 }
 
+// Function to perform semantic search on a document
 async function SemanticSearch() {
 
+    // post request to /file, which is the endpoint for uploading a file and performing semantic search
     app.post("/file", upload.single('file'), async(req, res) => {
 
-        const file = req.file; // The uploaded file is available in req.file
+        // Get the file name and the message from the request body
         const fileName = req.file.originalname;
         const { message } = JSON.parse(req.body.message);
 
-        // // Set up OpenAI API key and model
-        const MODEL_ENGINE = 'text-embedding-ada-002';
+        // Extract text from the PDF file
+        let text = await extractTextFromFile('uploads/' + fileName);
 
-        async function createDocumentList(text, maxChars = 500) {
-            // Split text into sentences
-            const sentences = text.split(/(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s/);
-
-            // Group sentences into documents
-            const documents = [];
-            for (const sentence of sentences) {
-                if (sentence.length <= maxChars) {
-                    documents.push(sentence.trim());
-                }
-            }
-            return documents;
-        }
-
-        let text = await extractTextFromPDF('uploads/' + fileName);
-
-        console.log(text);
-
+        // split the text into batches and cache the batches to avoid having to split the text every time
         const documents = await createDocumentList(text);
 
-        // Create document embeddings using OpenAI's text-embedding-ada-2 model
-        const embeddings = [];
-        for (const doc of documents) {
-            const res = await openai.createEmbedding({
-                model: MODEL_ENGINE,
-                input: [doc]
-            });
-            embeddings.push(res);
-        }
+        // Calculate the embeddings for the document batches and cache the embeddings to avoid having to calculate them every time
+        const embeddings = await getEmbedding(documents);
 
         // Define query to search for
         const query = message.toString();
 
         // Create embedding for query
         const queryRes = await openai.createEmbedding({
-            model: MODEL_ENGINE,
+            model: 'text-embedding-ada-002',
             input: [query]
         });
         const queryEmbedding = ndarray(queryRes.data.data[0]);
@@ -120,31 +161,32 @@ async function SemanticSearch() {
         // Perform semantic search by calculating cosine similarity between query and document embeddings
         const rankedIndices = [];
         for (let i = 0; i < documents.length; i++) {
-            const docEmbedding = embeddings[i].data.data[0].embedding;
+            const docEmbedding = embeddings[i];
             const similarity = cosineSimilarity(queryEmbeddingArray, docEmbedding);
             rankedIndices.push([i, similarity]);
         }
         rankedIndices.sort((a, b) => b[1] - a[1]);
 
-        // Print top 5 search results
+        // save the top 5 results in an array
         const results = [];
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 10; i++) {
             const index = rankedIndices[i][0];
             results.push(documents[index]);
         }
 
+        console.log(results);
 
-        //Answer the question by passing the results to the davinci model
+
+        //Answer the question by passing the results to the davinci model and asking it to answer the question
         async function answerQuestion(query, results) {
             const response = await openai.createCompletion({
                 model: 'text-davinci-003',
-                prompt: `i have a {text} and i would like you to only ansewr my {question} based on the content of that text. I would also like the ansewr to be in the same language as the question. If you dont find the ansewr in that text, say you cant find it in that document in the same language the question was asked. Text: ${results}  Question: ${query}  Svar: `,
-                max_tokens: 1000,
+                prompt: `i have a {text} which is embeddings with closest cosine to the question, and i would like you to ansewr my {question} detailed based on the content of that embeddings. I would also like the ansewr to be in the same language as the question. If you dont find the ansewr in that text, say you cant find it in that document in the same language the question was asked. Text: ${results}  Question: ${query}  Svar: `,
+                max_tokens: 2000,
                 temperature: 0.5
             });
             return response.data.choices[0].text;
         }
-
         const response = await answerQuestion(query, results);
         console.log(response);
         res.json({
