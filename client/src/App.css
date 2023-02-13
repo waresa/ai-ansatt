@@ -1,3 +1,7 @@
+    p {
+        color: white;
+    }
+    
     .App {
         display: flex;
         text-align: center;
