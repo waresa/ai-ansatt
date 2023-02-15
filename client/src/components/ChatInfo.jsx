@@ -1,11 +1,11 @@
 
 const ToolInfo = (props) => {
 
-    const { ansatt, generator } = props;
+    const { ansatt, generator, file } = props;
 
     return (
         <div className='info'>
-        {ansatt === "" && generator === "" && 
+        {ansatt === "" && generator === "" && file === null && 
         <div className='info'>
           <h1>Velkommen til AI-Assistenten</h1>
           <p>Her kan du chatte om generelle ting med en AI assistanten. Du kan velge en ansatt eller en generator for å få hjelp om spesefike oppgaver.</p>
@@ -129,6 +129,12 @@ const ToolInfo = (props) => {
           <p>Forretningsplan generator kan hjelpe deg med å generere en forretningsplan.</p>
           <p><span className='ex'>Eksempel spørsmål: </span>Startup som skal lage en app for å hjelpe folk med å finne en partner.</p>
         </div>}
+
+      {file !== null && 
+      <div className='info'> 
+        <h1>Søk Gjennom Fil</h1>
+        <p>Med denne funksjonen kan du utdype din forståelse om en dokument.</p>
+      </div>}
         </div>
 
     );

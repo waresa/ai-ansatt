@@ -3,7 +3,7 @@ import ChatInfo from './ChatInfo';
 import ChatForm from './ChatForm';
   
   const ChatBox = (props) => {
-    const { chatLog, isLoading, ansatt, generator, handleSubmit, input, setInput } = props;
+    const { chatLog, isLoading, ansatt, generator, handleSubmit, input, setInput, file } = props;
 
     function toggleInfoOff() {
         const info = document.querySelector('.info');
@@ -46,7 +46,7 @@ import ChatForm from './ChatForm';
 </div>
 </div>}
 
-<ChatInfo ansatt={ansatt} generator={generator} />
+<ChatInfo ansatt={ansatt} generator={generator} file={file} />
 
     </div>
 <ChatForm handleSubmit={handleSubmit} toggleInfoOff={toggleInfoOff} input={input} setInput={setInput} />

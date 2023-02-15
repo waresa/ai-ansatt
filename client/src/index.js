@@ -3,7 +3,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Chat from "./pages/Chat";
 import Layout from "./pages/Layout";
 import Home from "./pages/Home";
-import FileSearch from "./pages/FileSearch";
 
 
 export default function App() {
@@ -15,9 +14,6 @@ export default function App() {
         <Route index element = { <Chat /> } />  
         <Route path = "home"
         element = { <Home /> } /> 
-        <Route path = "filesearch"
-        element = { < FileSearch/> }
-        /> 
         </Route> 
         </Routes>  </BrowserRouter >
     );
