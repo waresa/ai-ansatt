@@ -169,7 +169,7 @@ async function SemanticSearch() {
 
         // save the top 5 results in an array
         const results = [];
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 15; i++) {
             const index = rankedIndices[i][0];
             results.push(documents[index]);
         }
