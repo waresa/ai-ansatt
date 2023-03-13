@@ -24,7 +24,7 @@
         "ndarray-ops": "^1.2.2",
         "nltk": "^0.0.1",
         "node-cache": "^5.1.2",
-        "openai": "^3.1.0",
+        "openai": "^3.2.1",
         "path": "^0.12.7",
         "pdf-parse": "^1.1.1"
     }

@@ -114,17 +114,20 @@ async function callApi() {
         // variable tool that is ansatt if ansatt is not empty string, and generator if generator is not empty string
         const tool = ansatt || generator;
 
-        const response = await openai.createCompletion({
-            model: "text-davinci-003",
-            prompt: `Act as a(n) ${tool}. Ansewr in language asked, default to norwegian. Q: ${message}?`,
-            max_tokens: 2000,
-            temperature: 0.9,
+        const response = await openai.createChatCompletion({
+            model: 'gpt-3.5-turbo',
+            messages: [
+                { "role": "system", "content": "You are a helpful assistant." },
+                { "role": "user", "content": "Who won the world series in 2020?" },
+                { "role": "assistant", "content": "The Los Angeles Dodgers won the World Series in 2020." },
+                { "role": "user", "content": `Act as a(n) ${tool}. Ansewr in language asked, default to norwegian. Q: ${message}?` }
+            ]
         });
         res.json({
-            message: response.data.choices[0].text
+            message: response.data.choices[0].message.content
         })
         console.log(message);
-        console.log(response.data.choices[0].text);
+        console.log(response.data.choices[0].message.content);
     });
 }
 
@@ -169,24 +172,35 @@ async function SemanticSearch() {
 
         // save the top 5 results in an array
         const results = [];
-        for (let i = 0; i < 15; i++) {
-            const index = rankedIndices[i][0];
-            results.push(documents[index]);
+        const docLength = documents.length;
+        if (docLength > 10) {
+            for (let i = 0; i < 10; i++) {
+                const index = rankedIndices[i][0];
+                results.push(documents[index]);
+            }
+        } else {
+            for (let i = 0; i < docLength; i++) {
+                const index = rankedIndices[i][0];
+                results.push(documents[index]);
+            }
         }
 
-        console.log(results);
+        // console.log(results);
 
-
-        //Answer the question by passing the results to the davinci model and asking it to answer the question
+        // //Answer the question by passing the results to the davinci model and asking it to answer the question
         async function answerQuestion(query, results) {
-            const response = await openai.createCompletion({
-                model: 'text-davinci-003',
-                prompt: `i have a {text} which is embeddings with closest cosine to the question, and i would like you to ansewr my {question} detailed based on the content of that embeddings. I would also like the ansewr to be in the same language as the question. If you dont find the ansewr in that text, say you cant find it in that document in the same language the question was asked. Text: ${results}  Question: ${query}  Svar: `,
-                max_tokens: 2000,
-                temperature: 0.5
+            const response = await openai.createChatCompletion({
+                model: 'gpt-3.5-turbo',
+                messages: [
+                    { "role": "system", "content": "You are an assitant. Your job is to look at parts of a file that you are given and answer questions asked by the user based on those parts. You can also give extra information if you have it." },
+                    { "role": "user", "content": "File parts: '38608500 Netteier Agder Energi Nett AS Orgnr. Ved for sen betaling blir 8,50 %rente p.a. lagt til, Ved purring er gebyret kr 35, Ved annen betalingsmåte enn vedlagt giro, oppgi KID-nummer: 059480500100346, KID for tegning av avtalegiro: 059480500100015, Forventet årsforbruk er 3850 kWh/år, Varedeklarasjon strømforbruk, Kunder som ikke kjøper strøm med opprinnelsesgaranti vil ha en forbruksmiks som fordeler seg på ulike energikilder. Avregning, Ønsker du å se flere detaljer, kan du logge deg inn på, minside.los.no., Elsertifikater, www.nve.no, Varedeklarasjon, www.nve.no/varedeklarasjon, Avtalevilkår samt særvilkår er oppdatert, pr. Sewww.elklagenemnda.noeller kontakt oss for mer informasjon. The question: Hvilke type dokument er dette?" },
+                    { "role": "assistant", "content": "Dette er en regning fra Agder Energi Nett AS." },
+                    { "role": "user", "content": `File parts: ${results}, The question: ${query} `, }
+                ]
             });
-            return response.data.choices[0].text;
+            return response.data.choices[0].message.content;
         }
+        //Answer the question by passing the results to the davinci model and asking it to answer the question
         const response = await answerQuestion(query, results);
         console.log(response);
         res.json({
