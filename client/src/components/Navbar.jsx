@@ -1,55 +1,39 @@
-import { Link } from 'react-router-dom';
-import Hamburger from 'hamburger-react';
+import { Component } from "react";
+import { MenuData } from "./MenuData";
+import Hamburger from "hamburger-react";
+import '../navbar.css';
 
+function toggleNavbar() {
+    const navbar = document.querySelector('.nav-menu');
+    if (navbar.style.left === '-110%' || navbar.style.left === '') {
+    navbar.style.left = '0';
+    } else {
+    navbar.style.left = '-110%';
+    }
+}
 
-const SideMenu = (props) => {
-    const { ansatt, generator, clearChat, setAnsatt, setGenerator } = props;
+class Navbar extends Component{
+        render(){
+            return(
+                <nav className="NavbarItems">
+                    <h1 className="navbar-logo">DigiAnsatt <i className="fab fa-react"></i></h1>
+                    <div className="menu-icons">
+                        <i className="humburger">< Hamburger onToggle={toggleNavbar}/></i>
+                    </div>
+                    <ul className="nav-menu">
+                        {MenuData.map((item, index) => {
+                            return(
+                                <li key={index}>
+                                    <a className={item.cName} href={item.link}>
+                                        {item.title}
+                                    </a>
+                                </li>
+                            )
+                        })}
+                    </ul>
+                </nav>
+            );
+    }
+}
 
-    function toggleInfoOn() {
-        const info = document.querySelector('.info');
-        info.style.display = 'flex';
-      }
-      
-      // function showNavbar that turns the display of the sidemenu on and off
-        function showNavbar() {
-            const sidemenu = document.querySelector('.sidemenu');
-            if (sidemenu.style.display === 'none' || sidemenu.style.display === '') {
-            sidemenu.style.display = 'block';
-            } else {
-            sidemenu.style.display = 'none';
-            }
-        }
-  
-    return (
-    <div className='sidemenu-container-home'>
-    <div className='nav'><Hamburger onToggle={showNavbar} color='#fff' size={20} /></div>
-      <aside className='sidemenu'>
-
-        <Link to="/home" className='link'>
-            <div className="sidemenu-bottom-btn">
-                Hjem
-            </div>
-        </Link>
-        <Link to="/profile" className='link'>
-            <div className="sidemenu-bottom-btn">
-                Profil
-            </div>
-        </Link>
-        <Link to="/log-out" className='link'>
-            <div className="sidemenu-bottom-btn">
-                Logg Ut
-            </div>
-        </Link>
-        <Link to="/help" className='link'>
-            <div className="sidemenu-bottom-help">
-                Hjelp?
-            </div>
-        </Link>
-  
-      </aside>
-      </div>
-    );
-  }
-  
-
-export default SideMenu;
+export default Navbar;
