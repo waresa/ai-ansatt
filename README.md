@@ -1,6 +1,6 @@
 ﻿# ai-ansatt
 
-- Wrapper got OpenAI sin API
+- Wrapper for OpenAI sin API
 
 - Kan velge spesefike roller for AI-en slik at svarene blir bedre.
 - Brukeren kan også laste opp en fil og spør om filen. 
